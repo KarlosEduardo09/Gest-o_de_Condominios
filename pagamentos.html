@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Pagamentos</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        form { margin-bottom: 20px; }
+        input, select, button { padding: 5px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background: #f4f4f4; }
+        .btn { padding: 5px 10px; cursor: pointer; }
+        .edit { background: orange; color: white; border: none; }
+        .delete { background: red; color: white; border: none; }
+    </style>
+</head>
+<body>
+
+    <h1>Controle de Pagamentos</h1>
+
+    <form id="formPagamentos">
+        <input type="hidden" id="pagamentoId">
+        <input type="text" id="morador" placeholder="Nome do Morador" required>
+        <input type="text" id="apartamento" placeholder="Apartamento" required>
+        <input type="number" id="valor" placeholder="Valor (R$)" step="0.01" required>
+        <input type="date" id="data" required>
+        <button type="submit">Salvar</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Morador</th>
+                <th>Apartamento</th>
+                <th>Valor (R$)</th>
+                <th>Data</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="listaPagamentos"></tbody>
+    </table>
+
+    <script>
+        const form = document.getElementById('formPagamentos');
+        const lista = document.getElementById('listaPagamentos');
+        let pagamentos = JSON.parse(localStorage.getItem('pagamentos')) || [];
+
+        function salvarLocal() {
+            localStorage.setItem('pagamentos', JSON.stringify(pagamentos));
+        }
+
+        function render() {
+            lista.innerHTML = '';
+            pagamentos.forEach((p, i) => {
+                lista.innerHTML += `
+                    <tr>
+                        <td>${p.morador}</td>
+                        <td>${p.apartamento}</td>
+                        <td>${p.valor.toFixed(2)}</td>
+                        <td>${p.data}</td>
+                        <td>
+                            <button class="btn edit" onclick="editar(${i})">Editar</button>
+                            <button class="btn delete" onclick="remover(${i})">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        form.onsubmit = e => {
+            e.preventDefault();
+            const morador = document.getElementById('morador').value;
+            const apartamento = document.getElementById('apartamento').value;
+            const valor = parseFloat(document.getElementById('valor').value);
+            const data = document.getElementById('data').value;
+            const id = document.getElementById('pagamentoId').value;
+
+            if (id) {
+                pagamentos[id] = { morador, apartamento, valor, data };
+            } else {
+                pagamentos.push({ morador, apartamento, valor, data });
+            }
+            salvarLocal();
+            render();
+            form.reset();
+            document.getElementById('pagamentoId').value = '';
+        };
+
+        function editar(i) {
+            const p = pagamentos[i];
+            document.getElementById('pagamentoId').value = i;
+            document.getElementById('morador').value = p.morador;
+            document.getElementById('apartamento').value = p.apartamento;
+            document.getElementById('valor').value = p.valor;
+            document.getElementById('data').value = p.data;
+        }
+
+        function remover(i) {
+            if (confirm("Deseja excluir este pagamento?")) {
+                pagamentos.splice(i, 1);
+                salvarLocal();
+                render();
+            }
+        }
+
+        render();
+    </script>
+
+</body>
+</html>

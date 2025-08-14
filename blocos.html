@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Blocos</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        form { margin-bottom: 20px; }
+        input, button { padding: 5px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background: #f4f4f4; }
+        .btn { padding: 5px 10px; cursor: pointer; }
+        .edit { background: orange; color: white; border: none; }
+        .delete { background: red; color: white; border: none; }
+    </style>
+</head>
+<body>
+
+    <h1>Gestão de Blocos</h1>
+
+    <form id="formBlocos">
+        <input type="hidden" id="blocoId">
+        <input type="text" id="nome" placeholder="Nome do Bloco" required>
+        <input type="text" id="descricao" placeholder="Descrição" required>
+        <button type="submit">Salvar</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Descrição</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="listaBlocos"></tbody>
+    </table>
+
+    <script>
+        const form = document.getElementById('formBlocos');
+        const lista = document.getElementById('listaBlocos');
+        let blocos = JSON.parse(localStorage.getItem('blocos')) || [];
+
+        function salvarLocal() {
+            localStorage.setItem('blocos', JSON.stringify(blocos));
+        }
+
+        function render() {
+            lista.innerHTML = '';
+            blocos.forEach((b, i) => {
+                lista.innerHTML += `
+                    <tr>
+                        <td>${b.nome}</td>
+                        <td>${b.descricao}</td>
+                        <td>
+                            <button class="btn edit" onclick="editar(${i})">Editar</button>
+                            <button class="btn delete" onclick="remover(${i})">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        form.onsubmit = e => {
+            e.preventDefault();
+            const nome = document.getElementById('nome').value;
+            const descricao = document.getElementById('descricao').value;
+            const id = document.getElementById('blocoId').value;
+
+            if (id) {
+                blocos[id] = { nome, descricao };
+            } else {
+                blocos.push({ nome, descricao });
+            }
+
+            salvarLocal();
+            render();
+            form.reset();
+            document.getElementById('blocoId').value = '';
+        };
+
+        function editar(i) {
+            document.getElementById('blocoId').value = i;
+            document.getElementById('nome').value = blocos[i].nome;
+            document.getElementById('descricao').value = blocos[i].descricao;
+        }
+
+        function remover(i) {
+            if (confirm("Deseja excluir este bloco?")) {
+                blocos.splice(i, 1);
+                salvarLocal();
+                render();
+            }
+        }
+
+        render();
+    </script>
+
+</body>
+</html>

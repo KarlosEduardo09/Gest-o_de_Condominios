@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Manutenções</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        form { margin-bottom: 20px; }
+        input, select, button { padding: 5px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background: #f4f4f4; }
+        .btn { padding: 5px 10px; cursor: pointer; }
+        .edit { background: orange; color: white; border: none; }
+        .delete { background: red; color: white; border: none; }
+    </style>
+</head>
+<body>
+
+    <h1>Registro de Manutenções Realizadas</h1>
+
+    <form id="formManutencoes">
+        <input type="hidden" id="manutencaoId">
+        
+        <input type="text" id="apartamento" placeholder="Apartamento" required>
+        <input type="text" id="tipo" placeholder="Tipo de Manutenção" required>
+        <input type="text" id="responsavel" placeholder="Responsável" required>
+        <input type="date" id="data" required>
+        <input type="text" id="descricao" placeholder="Descrição" required>
+        <button type="submit">Salvar</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Apartamento</th>
+                <th>Tipo</th>
+                <th>Responsável</th>
+                <th>Data</th>
+                <th>Descrição</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="listaManutencoes"></tbody>
+    </table>
+
+    <script>
+        const form = document.getElementById('formManutencoes');
+        const lista = document.getElementById('listaManutencoes');
+        let manutencoes = JSON.parse(localStorage.getItem('manutencoes')) || [];
+
+        function salvarLocal() {
+            localStorage.setItem('manutencoes', JSON.stringify(manutencoes));
+        }
+
+        function render() {
+            lista.innerHTML = '';
+            manutencoes.forEach((m, i) => {
+                lista.innerHTML += `
+                    <tr>
+                        <td>${m.apartamento}</td>
+                        <td>${m.tipo}</td>
+                        <td>${m.responsavel}</td>
+                        <td>${m.data}</td>
+                        <td>${m.descricao}</td>
+                        <td>
+                            <button class="btn edit" onclick="editar(${i})">Editar</button>
+                            <button class="btn delete" onclick="remover(${i})">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        form.onsubmit = e => {
+            e.preventDefault();
+            const apartamento = document.getElementById('apartamento').value;
+            const tipo = document.getElementById('tipo').value;
+            const responsavel = document.getElementById('responsavel').value;
+            const data = document.getElementById('data').value;
+            const descricao = document.getElementById('descricao').value;
+            const id = document.getElementById('manutencaoId').value;
+
+            if (id) {
+                manutencoes[id] = { apartamento, tipo, responsavel, data, descricao };
+            } else {
+                manutencoes.push({ apartamento, tipo, responsavel, data, descricao });
+            }
+
+            salvarLocal();
+            render();
+            form.reset();
+            document.getElementById('manutencaoId').value = '';
+        };
+
+        function editar(i) {
+            const m = manutencoes[i];
+            document.getElementById('manutencaoId').value = i;
+            document.getElementById('apartamento').value = m.apartamento;
+            document.getElementById('tipo').value = m.tipo;
+            document.getElementById('responsavel').value = m.responsavel;
+            document.getElementById('data').value = m.data;
+            document.getElementById('descricao').value = m.descricao;
+        }
+
+        function remover(i) {
+            if (confirm("Deseja excluir esta manutenção?")) {
+                manutencoes.splice(i, 1);
+                salvarLocal();
+                render();
+            }
+        }
+
+        render();
+    </script>
+
+</body>
+</html>

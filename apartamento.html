@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Apartamentos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        main {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        h2 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input, button {
+            padding: 8px;
+            margin: 5px 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background: #eee;
+        }
+        .btn {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .edit { background: orange; color: white; }
+        .delete { background: red; color: white; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Gestão de Apartamentos</h1>
+</header>
+
+<main>
+    <h2>Cadastrar Apartamento</h2>
+    <form id="formApartamento">
+        <input type="hidden" id="editIndex">
+        <label>Bloco:</label>
+        <input type="text" id="bloco" required>
+        
+        <label>Número do Apartamento:</label>
+        <input type="text" id="numero" required>
+        
+        <label>Proprietário:</label>
+        <input type="text" id="proprietario" required>
+        
+        <button type="submit">Salvar</button>
+    </form>
+
+    <h2>Lista de Apartamentos</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Bloco</th>
+                <th>Número</th>
+                <th>Proprietário</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="tabelaApartamentos"></tbody>
+    </table>
+</main>
+
+<script>
+    let apartamentos = JSON.parse(localStorage.getItem("apartamentos")) || [];
+
+    function atualizarTabela() {
+        const tabela = document.getElementById("tabelaApartamentos");
+        tabela.innerHTML = "";
+        apartamentos.forEach((apt, index) => {
+            tabela.innerHTML += `
+                <tr>
+                    <td>${apt.bloco}</td>
+                    <td>${apt.numero}</td>
+                    <td>${apt.proprietario}</td>
+                    <td>
+                        <button class="btn edit" onclick="editarApartamento(${index})">Editar</button>
+                        <button class="btn delete" onclick="excluirApartamento(${index})">Excluir</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function salvarApartamento(e) {
+        e.preventDefault();
+        const bloco = document.getElementById("bloco").value;
+        const numero = document.getElementById("numero").value;
+        const proprietario = document.getElementById("proprietario").value;
+        const editIndex = document.getElementById("editIndex").value;
+
+        if (editIndex) {
+            apartamentos[editIndex] = { bloco, numero, proprietario };
+            document.getElementById("editIndex").value = "";
+        } else {
+            apartamentos.push({ bloco, numero, proprietario });
+        }
+
+        localStorage.setItem("apartamentos", JSON.stringify(apartamentos));
+        document.getElementById("formApartamento").reset();
+        atualizarTabela();
+    }
+
+    function editarApartamento(index) {
+        const apt = apartamentos[index];
+        document.getElementById("bloco").value = apt.bloco;
+        document.getElementById("numero").value = apt.numero;
+        document.getElementById("proprietario").value = apt.proprietario;
+        document.getElementById("editIndex").value = index;
+    }
+
+    function excluirApartamento(index) {
+        if (confirm("Deseja realmente excluir este apartamento?")) {
+            apartamentos.splice(index, 1);
+            localStorage.setItem("apartamentos", JSON.stringify(apartamentos));
+            atualizarTabela();
+        }
+    }
+
+    document.getElementById("formApartamento").addEventListener("submit", salvarApartamento);
+    atualizarTabela();
+</script>
+
+</body>
+</html>
