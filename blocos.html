@@ -5,26 +5,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestão de Blocos</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        form { margin-bottom: 20px; }
-        input, button { padding: 5px; margin: 5px 0; width: 100%; box-sizing: border-box; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-        th { background: #f4f4f4; }
-        .btn { padding: 5px 10px; cursor: pointer; }
-        .edit { background: orange; color: white; border: none; }
-        .delete { background: red; color: white; border: none; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: darkgreen;
+            color: white;
+            text-align: center;
+            padding: 15px;
+        }
+        main {
+            max-width: 700px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background: green;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+            transition: 0.2s;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background: darkgreen;
+            color: white;
+        }
+        td {
+            vertical-align: middle;
+        }
+        .acoes {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+        .btn-editar {
+            background: orange;
+        }
+        .btn-excluir {
+            background: red;
+        }
+        .btn-voltar {
+            background: gray;
+            color: white;
+            margin-bottom: 15px;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+        .btn-voltar:hover {
+            background: darkgray;
+        }
     </style>
 </head>
 <body>
 
-    <h1>Gestão de Blocos</h1>
+<header>
+    <h1>Cadastro de Blocos</h1>
+</header>
 
-    <form id="formBlocos">
-        <input type="hidden" id="blocoId">
+<main>
+    <!-- Botão de voltar -->
+    <button onclick="window.location.href='index.html'" class="btn-voltar">⬅ Voltar</button>
+
+    <form id="formBloco">
+        <input type="hidden" id="editIndex">
         <input type="text" id="nome" placeholder="Nome do Bloco" required>
         <input type="text" id="descricao" placeholder="Descrição" required>
-        <button type="submit">Salvar</button>
+        <button type="submit">💾 Salvar</button>
     </form>
 
     <table>
@@ -37,66 +109,72 @@
         </thead>
         <tbody id="listaBlocos"></tbody>
     </table>
+</main>
 
-    <script>
-        const form = document.getElementById('formBlocos');
-        const lista = document.getElementById('listaBlocos');
-        let blocos = JSON.parse(localStorage.getItem('blocos')) || [];
+<script>
+    let blocos = JSON.parse(localStorage.getItem("blocos")) || [];
 
-        function salvarLocal() {
-            localStorage.setItem('blocos', JSON.stringify(blocos));
+    function atualizarTabela() {
+        const lista = document.getElementById("listaBlocos");
+        lista.innerHTML = "";
+        blocos.forEach((bloco, index) => {
+            lista.innerHTML += `
+                <tr>
+                    <td>${bloco.nome}</td>
+                    <td>${bloco.descricao}</td>
+                    <td>
+                        <div class="acoes">
+                            <button class="btn-editar" onclick="editarBloco(${index})">✏ Editar</button>
+                            <button class="btn-excluir" onclick="excluirBloco(${index})">🗑 Excluir</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    document.getElementById("formBloco").addEventListener("submit", function(e) {
+        e.preventDefault();
+        const nome = document.getElementById("nome").value.trim();
+        const descricao = document.getElementById("descricao").value.trim();
+        const editIndex = document.getElementById("editIndex").value;
+        const btnSalvar = document.querySelector("#formBloco button");
+
+        if (nome === "" || descricao === "") {
+            alert("Preencha todos os campos!");
+            return;
         }
 
-        function render() {
-            lista.innerHTML = '';
-            blocos.forEach((b, i) => {
-                lista.innerHTML += `
-                    <tr>
-                        <td>${b.nome}</td>
-                        <td>${b.descricao}</td>
-                        <td>
-                            <button class="btn edit" onclick="editar(${i})">Editar</button>
-                            <button class="btn delete" onclick="remover(${i})">Excluir</button>
-                        </td>
-                    </tr>
-                `;
-            });
+        if (editIndex === "") {
+            blocos.push({ nome, descricao });
+        } else {
+            blocos[editIndex] = { nome, descricao };
+            document.getElementById("editIndex").value = "";
+            btnSalvar.textContent = "💾 Salvar";
         }
 
-        form.onsubmit = e => {
-            e.preventDefault();
-            const nome = document.getElementById('nome').value;
-            const descricao = document.getElementById('descricao').value;
-            const id = document.getElementById('blocoId').value;
+        localStorage.setItem("blocos", JSON.stringify(blocos));
+        document.getElementById("formBloco").reset();
+        atualizarTabela();
+    });
 
-            if (id) {
-                blocos[id] = { nome, descricao };
-            } else {
-                blocos.push({ nome, descricao });
-            }
+    function editarBloco(index) {
+        document.getElementById("nome").value = blocos[index].nome;
+        document.getElementById("descricao").value = blocos[index].descricao;
+        document.getElementById("editIndex").value = index;
+        document.querySelector("#formBloco button").textContent = "✏ Atualizar";
+    }
 
-            salvarLocal();
-            render();
-            form.reset();
-            document.getElementById('blocoId').value = '';
-        };
-
-        function editar(i) {
-            document.getElementById('blocoId').value = i;
-            document.getElementById('nome').value = blocos[i].nome;
-            document.getElementById('descricao').value = blocos[i].descricao;
+    function excluirBloco(index) {
+        if (confirm("Tem certeza que deseja excluir este bloco?")) {
+            blocos.splice(index, 1);
+            localStorage.setItem("blocos", JSON.stringify(blocos));
+            atualizarTabela();
         }
+    }
 
-        function remover(i) {
-            if (confirm("Deseja excluir este bloco?")) {
-                blocos.splice(i, 1);
-                salvarLocal();
-                render();
-            }
-        }
-
-        render();
-    </script>
+    atualizarTabela();
+</script>
 
 </body>
 </html>

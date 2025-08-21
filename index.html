@@ -3,62 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestão de Condomínios</title>
+    <title>Gestão de Condomínios</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f4f4;
+        /* Reset básico */
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f4f4f4, #e0e0e0);
+            color: darkgreen;
+        }
+
         header {
-            background: #333;
+            background: linear-gradient(90deg, #2e7d32, #43a047);
             color: white;
             text-align: center;
-            padding: 20px 0;
+            padding: 25px 0;
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.2);
         }
+
+        header h1 {
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+        }
+
         main {
-            max-width: 800px;
-            margin: 40px auto;
-            text-align: center;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 0 20px;
         }
-        h1 {
-            margin-bottom: 40px;
-        }
+
         .menu {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
         }
+
         .menu a {
             display: block;
             padding: 20px;
-            background: #007bff;
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
             color: white;
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 18px;
-            transition: 0.3s;
+            font-weight: bold;
+            box-shadow: 0px 4px 8px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
         }
+
+        /* Efeito ao passar o mouse */
         .menu a:hover {
-            background: #0056b3;
+            transform: translateY(-5px);
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.25);
+            background: linear-gradient(135deg, #43a047, #2e7d32);
+        }
+
+        /* Responsividade */
+        @media (max-width: 500px) {
+            header h1 {
+                font-size: 1.6rem;
+            }
+            .menu a {
+                font-size: 16px;
+                padding: 15px;
+            }
         }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Sistema de Gestão de Condomínios</h1>
+    <h1>Gestão de Condomínios</h1>
 </header>
 
 <main>
     <div class="menu">
-        <a href="http://127.0.0.1:5500/blocos.html">Blocos</a>
-        <a href="http://127.0.0.1:5500/apartamento.html">Apartamentos</a>
-        <a href="http://127.0.0.1:5500/moradores.html">Moradores</a>
-        <a href="http://127.0.0.1:5500/pagamentos.html">Pagamentos</a>
-        <a href="http://127.0.0.1:5500/tipomanutencao.html">Tipos de Manutenção</a>
-        <a href="http://127.0.0.1:5500/manutencoes.html">Manutenções Realizadas</a>
+        <a href="blocos.html">Blocos</a>
+        <a href="apartamento.html">Apartamentos</a>
+        <a href="moradores.html">Moradores</a>
+        <a href="pagamentos.html">Pagamentos</a>
+        <a href="tipomanutencao.html">Tipos de Manutenção</a>
+        <a href="manutencoes.html">Manutenções Realizadas</a>
     </div>
 </main>
 

@@ -3,24 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Moradores</title>
+    <title>Gestão de Moradores</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        form { margin-bottom: 20px; }
-        input, button { padding: 5px; margin: 5px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-        th { background: #f4f4f4; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: darkgreen;
+            color: white;
+            text-align: center;
+            padding: 15px;
+        }
+        main {
+            max-width: 900px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+        button {
+            background: green;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: darkgreen;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background: #32f75c;
+            color: white;
+        }
+        .btn-editar {
+            background: orange;
+            color: white;
+            border: none;
+            padding: 6px;
+            cursor: pointer;
+        }
+        .btn-excluir {
+            background: red;
+            color: white;
+            border: none;
+            padding: 6px;
+            cursor: pointer;
+        }
+        .btn-voltar {
+            background: gray;
+            color: white;
+            margin-bottom: 15px;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+        .btn-voltar:hover {
+            background: darkgray;
+        }
     </style>
 </head>
 <body>
-    <h1>Cadastro de Moradores</h1>
 
-    <form id="formMoradores">
-        <input type="hidden" id="moradorId">
-        <input type="text" id="nome" placeholder="Nome" required>
+<header>
+    <h1>Cadastro de Moradores</h1>
+</header>
+
+<main>
+    <button onclick="window.location.href='index.html'" class="btn-voltar">⬅ Voltar</button>
+
+    <form id="formMorador">
+        <input type="hidden" id="editIndex">
+        <input type="text" id="nome" placeholder="Nome do Morador" required>
         <input type="text" id="apartamento" placeholder="Apartamento" required>
-        <button type="submit">Salvar</button>
+        <input type="text" id="telefone" placeholder="Telefone" required>
+        <input type="email" id="email" placeholder="E-mail" required>
+        <button type="submit">💾 Salvar</button>
     </form>
 
     <table>
@@ -28,68 +103,81 @@
             <tr>
                 <th>Nome</th>
                 <th>Apartamento</th>
+                <th>Telefone</th>
+                <th>E-mail</th>
                 <th>Ações</th>
             </tr>
         </thead>
         <tbody id="listaMoradores"></tbody>
     </table>
+</main>
 
-    <script>
-        const form = document.getElementById('formMoradores');
-        const lista = document.getElementById('listaMoradores');
-        let moradores = JSON.parse(localStorage.getItem('moradores')) || [];
+<script>
+    let moradores = JSON.parse(localStorage.getItem("moradores")) || [];
 
-        function salvarLocal() {
-            localStorage.setItem('moradores', JSON.stringify(moradores));
+    function atualizarTabela() {
+        const lista = document.getElementById("listaMoradores");
+        lista.innerHTML = "";
+        moradores.forEach((morador, index) => {
+            lista.innerHTML += `
+                <tr>
+                    <td>${morador.nome}</td>
+                    <td>${morador.apartamento}</td>
+                    <td>${morador.telefone}</td>
+                    <td>${morador.email}</td>
+                    <td>
+                        <button class="btn-editar" onclick="editarMorador(${index})">✏ Editar</button>
+                        <button class="btn-excluir" onclick="excluirMorador(${index})">🗑 Excluir</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    document.getElementById("formMorador").addEventListener("submit", function(e) {
+        e.preventDefault();
+        const nome = document.getElementById("nome").value.trim();
+        const apartamento = document.getElementById("apartamento").value.trim();
+        const telefone = document.getElementById("telefone").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const editIndex = document.getElementById("editIndex").value;
+
+        if (!nome || !apartamento || !telefone || !email) {
+            alert("Preencha todos os campos!");
+            return;
         }
 
-        function render() {
-            lista.innerHTML = '';
-            moradores.forEach((m, i) => {
-                lista.innerHTML += `
-                    <tr>
-                        <td>${m.nome}</td>
-                        <td>${m.apartamento}</td>
-                        <td>
-                            <button onclick="editar(${i})">Editar</button>
-                            <button onclick="remover(${i})">Excluir</button>
-                        </td>
-                    </tr>
-                `;
-            });
+        if (editIndex === "") {
+            moradores.push({ nome, apartamento, telefone, email });
+        } else {
+            moradores[editIndex] = { nome, apartamento, telefone, email };
+            document.getElementById("editIndex").value = "";
         }
 
-        form.onsubmit = e => {
-            e.preventDefault();
-            const nome = document.getElementById('nome').value;
-            const apartamento = document.getElementById('apartamento').value;
-            const id = document.getElementById('moradorId').value;
+        localStorage.setItem("moradores", JSON.stringify(moradores));
+        document.getElementById("formMorador").reset();
+        atualizarTabela();
+    });
 
-            if (id) {
-                moradores[id] = { nome, apartamento };
-            } else {
-                moradores.push({ nome, apartamento });
-            }
-            salvarLocal();
-            render();
-            form.reset();
-        };
+    function editarMorador(index) {
+        const morador = moradores[index];
+        document.getElementById("nome").value = morador.nome;
+        document.getElementById("apartamento").value = morador.apartamento;
+        document.getElementById("telefone").value = morador.telefone;
+        document.getElementById("email").value = morador.email;
+        document.getElementById("editIndex").value = index;
+    }
 
-        function editar(i) {
-            document.getElementById('moradorId').value = i;
-            document.getElementById('nome').value = moradores[i].nome;
-            document.getElementById('apartamento').value = moradores[i].apartamento;
+    function excluirMorador(index) {
+        if (confirm("Tem certeza que deseja excluir este morador?")) {
+            moradores.splice(index, 1);
+            localStorage.setItem("moradores", JSON.stringify(moradores));
+            atualizarTabela();
         }
+    }
 
-        function remover(i) {
-            if (confirm("Deseja excluir este morador?")) {
-                moradores.splice(i, 1);
-                salvarLocal();
-                render();
-            }
-        }
+    atualizarTabela();
+</script>
 
-        render();
-    </script>
 </body>
 </html>

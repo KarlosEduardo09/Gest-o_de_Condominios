@@ -7,12 +7,12 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f4f4f4;
+            background: #f9faf9;
             margin: 0;
             padding: 0;
         }
         header {
-            background: #333;
+            background: darkgreen;
             color: white;
             padding: 10px;
             text-align: center;
@@ -55,6 +55,8 @@
         }
         .edit { background: orange; color: white; }
         .delete { background: red; color: white; }
+        .btn-voltar { background: gray; color: white; margin-bottom: 15px; padding: 8px 15px; border-radius: 5px; }
+        .btn-voltar:hover {    background: darkgray;}
     </style>
 </head>
 <body>
@@ -92,7 +94,7 @@
         <tbody id="tabelaApartamentos"></tbody>
     </table>
 </main>
-
+<button onclick="window.location.href='index.html'" class="btn-voltar">⬅ Voltar</button>
 <script>
     let apartamentos = JSON.parse(localStorage.getItem("apartamentos")) || [];
 

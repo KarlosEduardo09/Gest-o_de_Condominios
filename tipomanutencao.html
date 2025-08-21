@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
+x <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tipos de Manutenção</title>
@@ -14,6 +14,16 @@
         .btn { padding: 5px 10px; cursor: pointer; }
         .edit { background: orange; color: white; border: none; }
         .delete { background: red; color: white; border: none; }
+        .btn-voltar {
+            background: gray;
+            color: white;
+            margin-bottom: 15px;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+        .btn-voltar:hover {
+            background: darkgray;
+        }
     </style>
 </head>
 <body>
@@ -35,6 +45,8 @@
         </thead>
         <tbody id="listaTipos"></tbody>
     </table>
+
+    <button onclick="window.location.href='index.html'" class="btn-voltar">⬅ Voltar</button>
 
     <script>
         const form = document.getElementById('formTipos');
