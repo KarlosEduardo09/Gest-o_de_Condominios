@@ -2,9 +2,11 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mysql = require("mysql2");
 const app = express();
-
+const path = require("path");
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
+app.use(express.static('public'));
 // Conexão com MySQL
 const connection = mysql.createConnection({
     host: "localhost",
@@ -21,68 +23,57 @@ connection.connect(err => {
     }
 });
 
-app.get("/", (req, res) => {
-    res.send(`
-        <h1>Sistema de Gestão de Condomínio</h1>
-        <ul>
-            <li><a href="/blocos">Blocos</a></li>
-            <li><a href="/apartamentos">Apartamentos</a></li>
-            <li><a href="/moradores">Moradores</a></li>
-            <li><a href="/pagamentos">Pagamentos</a></li>
-            <li><a href="/tipos_manutencao">Tipos de Manutenção</a></li>
-            <li><a href="/manutencoes">Manutenções Realizadas</a></li>
-        </ul>
-    `);
+app.get("/", function (req, res) {
+    res.sendFile(__dirname+ "/index.html")
 });
 
-
-app.get("/blocos", (req, res) => {
-    connection.query("SELECT * FROM blocos", (err, rows) => {
-        if (err) return res.send("Erro: " + err);
-        res.send(`
-            <h1>Blocos</h1>
-            <form method="POST" action="/blocos/cadastrar">
-                <input type="text" name="nome" placeholder="Nome do Bloco" required>
-                <button type="submit">Cadastrar</button>
-            </form>
-            <table border="1">
-                <tr><th>ID</th><th>Nome</th><th>Ações</th></tr>
-                ${rows.map(b => `<tr>
-                    <td>${b.id}</td>
-                    <td>${b.nome}</td>
-                    <td>
-                        <a href="/blocos/editar/${b.id}">Editar</a> |
-                        <a href="/blocos/deletar/${b.id}">Excluir</a>
-                    </td>
-                </tr>`).join("")}
-            </table>
-            <a href="/">Voltar</a>
-        `);
+app.get('/blocos', (req, res) => {
+    connection.query('SELECT * FROM blocos', (err, rows) => {
+        if (err) return res.status(500).send('Erro ao buscar blocos.');
+        let html = `<h1>Blocos</h1>
+        <form method="POST" action="/blocos/cadastrar">
+            <input type="text" name="nome" placeholder="Nome do bloco" required>
+            <input type="text" name="descricao" placeholder="Descrição do bloco">
+            <button type="submit">Cadastrar</button>
+        </form>
+        <table border="1">
+            <tr><th>ID</th><th>Nome</th><th>Descrição</th><th>Ações</th></tr>
+            ${rows.map(b => `<tr>
+                <td>${b.id}</td>
+                <td>${b.nome}</td>
+                <td>${b.descricao || ''}</td>
+                <td>
+                    <a href="/blocos/editar/${b.id}">Editar</a> |
+                    <a href="/blocos/deletar/${b.id}">Excluir</a>
+                </td>
+            </tr>`).join('')}
+        </table>
+        <a href="/">Voltar</a>`;
+        res.send(html);
     });
 });
 
-app.post("/blocos/cadastrar", (req, res) => {
-    connection.query("INSERT INTO blocos (nome) VALUES (?)", [req.body.nome], err => {
-        if (err) return res.send("Erro ao cadastrar: " + err);
-        res.redirect("/blocos");
-    });
+app.post('/blocos/cadastrar', (req, res) => {
+    const { nome, descricao } = req.body;
+    connection.query(
+        'INSERT INTO blocos (nome, descricao) VALUES (?, ?)',
+        [nome, descricao],
+        err => {
+            if (err) return res.status(500).send('Erro ao cadastrar bloco.');
+            res.redirect('/blocos');
+        }
+    );
 });
 
-app.get("/blocos/deletar/:id", (req, res) => {
-    connection.query("DELETE FROM blocos WHERE id=?", [req.params.id], err => {
-        if (err) return res.send("Erro ao excluir: " + err);
-        res.redirect("/blocos");
-    });
-});
-
-app.get("/blocos/editar/:id", (req, res) => {
-    connection.query("SELECT * FROM blocos WHERE id=?", [req.params.id], (err, rows) => {
-        if (err || rows.length === 0) return res.send("Bloco não encontrado.");
-        const b = rows[0];
+app.get('/blocos/editar/:id', (req, res) => {
+    connection.query('SELECT * FROM blocos WHERE id = ?', [req.params.id], (err, rows) => {
+        if (err || rows.length === 0) return res.status(404).send('Bloco não encontrado.');
+        const bloco = rows[0];
         res.send(`
             <h1>Editar Bloco</h1>
-            <form method="POST" action="/blocos/atualizar/${b.id}">
-                <input type="text" name="nome" value="${b.nome}" required>
+            <form method="POST" action="/blocos/atualizar/${bloco.id}">
+                <input type="text" name="nome" value="${bloco.nome}" required>
+                <input type="text" name="descricao" value="${bloco.descricao || ''}">
                 <button type="submit">Atualizar</button>
             </form>
             <a href="/blocos">Cancelar</a>
@@ -90,12 +81,18 @@ app.get("/blocos/editar/:id", (req, res) => {
     });
 });
 
-app.post("/blocos/atualizar/:id", (req, res) => {
-    connection.query("UPDATE blocos SET nome=? WHERE id=?", [req.body.nome, req.params.id], err => {
-        if (err) return res.send("Erro ao atualizar: " + err);
-        res.redirect("/blocos");
-    });
+app.post('/blocos/atualizar/:id', (req, res) => {
+    const { nome, descricao } = req.body;
+    connection.query(
+        'UPDATE blocos SET nome = ?, descricao = ? WHERE id = ?',
+        [nome, descricao, req.params.id],
+        err => {
+            if (err) return res.status(500).send('Erro ao atualizar bloco.');
+            res.redirect('/blocos');
+        }
+    );
 });
+
 
 
 app.get("/apartamentos", (req, res) => {

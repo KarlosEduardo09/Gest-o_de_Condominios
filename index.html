@@ -3,77 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Condomínios</title>
-    <style>
-        /* Reset básico */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f4f4f4, #e0e0e0);
-            color: darkgreen;
-        }
-
-        header {
-            background: linear-gradient(90deg, #2e7d32, #43a047);
-            color: white;
-            text-align: center;
-            padding: 25px 0;
-            box-shadow: 0px 4px 6px rgba(0,0,0,0.2);
-        }
-
-        header h1 {
-            font-size: 2.2rem;
-            letter-spacing: 1px;
-        }
-
-        main {
-            max-width: 900px;
-            margin: 50px auto;
-            padding: 0 20px;
-        }
-
-        .menu {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 25px;
-        }
-
-        .menu a {
-            display: block;
-            padding: 20px;
-            background: linear-gradient(135deg, #4caf50, #66bb6a);
-            color: white;
-            text-decoration: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            box-shadow: 0px 4px 8px rgba(0,0,0,0.15);
-            transition: all 0.3s ease;
-        }
-
-        /* Efeito ao passar o mouse */
-        .menu a:hover {
-            transform: translateY(-5px);
-            box-shadow: 0px 8px 16px rgba(0,0,0,0.25);
-            background: linear-gradient(135deg, #43a047, #2e7d32);
-        }
-
-        /* Responsividade */
-        @media (max-width: 500px) {
-            header h1 {
-                font-size: 1.6rem;
+    <link rel="stylesheet" href="/style.css">
+        <title>Gestão de Condomínios</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background: #f4f4f4;
+                margin: 0;
+                padding: 0;
+            }
+            header {
+                background: darkgreen;
+                color: white;
+                text-align: center;
+                padding: 20px 0;
+            }
+            main {
+                max-width: 800px;
+                margin: 40px auto;
+                text-align: center;
+            }
+            h1 {
+                margin-bottom: 40px;
+            }
+            .menu {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 20px;
             }
             .menu a {
-                font-size: 16px;
-                padding: 15px;
+                display: block;
+                padding: 20px;
+                background: green;
+                color: white;
+                text-decoration: none;
+                border-radius: 8px;
+                font-size: 18px;
+                transition: 0.3s;
             }
-        }
-    </style>
+            .menu a:hover {
+                background: darkgreen;
+            }
+        </style>
 </head>
 <body>
 
@@ -83,12 +54,12 @@
 
 <main>
     <div class="menu">
-        <a href="blocos.html">Blocos</a>
-        <a href="apartamento.html">Apartamentos</a>
-        <a href="moradores.html">Moradores</a>
-        <a href="pagamentos.html">Pagamentos</a>
-        <a href="tipomanutencao.html">Tipos de Manutenção</a>
-        <a href="manutencoes.html">Manutenções Realizadas</a>
+        <a href="http://127.0.0.1:5500/blocos.html">Blocos</a>
+        <a href="http://127.0.0.1:5500/apartamento.html">Apartamentos</a>
+        <a href="http://127.0.0.1:5500/moradores.html">Moradores</a>
+        <a href="http://127.0.0.1:5500/pagamentos.html">Pagamentos</a>
+        <a href="http://127.0.0.1:5500/tipomanutencao.html">Tipos de Manutenção</a>
+        <a href="http://127.0.0.1:5500/manutencoes.html">Manutenções Realizadas</a>
     </div>
 </main>
 
