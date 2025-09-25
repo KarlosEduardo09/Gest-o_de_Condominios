@@ -7,7 +7,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use(express.static('public'));
-// Conexão com MySQL
+
 const connection = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -26,6 +26,7 @@ connection.connect(err => {
 app.get("/", function (req, res) {
     res.sendFile(__dirname+ "/index.html")
 });
+
 
 app.get('/blocos', (req, res) => {
     connection.query('SELECT * FROM blocos', (err, rows) => {
