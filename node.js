@@ -27,6 +27,9 @@ app.get("/", function (req, res) {
     res.sendFile(__dirname+ "/index.html")
 });
 
+app.get("/blocos",(req,res)=>{
+    res.sendFile(__dirname+ "/blocos.html")
+});
 
 app.get('/blocos', (req, res) => {
     connection.query('SELECT * FROM blocos', (err, rows) => {
@@ -95,7 +98,9 @@ app.post('/blocos/atualizar/:id', (req, res) => {
 });
 
 
-
+app.get("/apartamento",(req,res)=>{
+    res.sendFile(__dirname+ "/apartamentos.html")
+});
 app.get("/apartamentos", (req, res) => {
     connection.query("SELECT * FROM apartamentos", (err, rows) => {
         if (err) return res.send("Erro: " + err);
@@ -130,7 +135,9 @@ app.post("/apartamentos/cadastrar", (req, res) => {
     });
 });
 
-
+app.get("/moradores",(req,res)=>{
+    res.sendFile(__dirname+ "/moradores.html")
+});
 app.get("/moradores", (req, res) => {
     connection.query("SELECT * FROM moradores", (err, rows) => {
         if (err) return res.send("Erro: " + err);
@@ -168,7 +175,9 @@ app.post("/moradores/cadastrar", (req, res) => {
 });
 
 
-
+app.get("/pagamento",(req,res)=>{
+    res.sendFile(__dirname+ "/pagamentos.html")
+});
 app.get("/pagamentos", (req, res) => {
     connection.query("SELECT * FROM pagamentos", (err, rows) => {
         if (err) return res.send("Erro: " + err);
@@ -203,7 +212,9 @@ app.post("/pagamentos/cadastrar", (req, res) => {
 });
 
 
-
+app.get("/tipos_manutenção",(req,res)=>{
+    res.sendFile(__dirname+ "/tipos_manutenção.html")
+});
 app.get("/tipos_manutencao", (req, res) => {
     connection.query("SELECT * FROM tipos_manutencao", (err, rows) => {
         if (err) return res.send("Erro: " + err);
@@ -232,7 +243,9 @@ app.post("/tipos_manutencao/cadastrar", (req, res) => {
     });
 });
 
-
+app.get("/manutencoes",(req,res)=>{
+    res.sendFile(__dirname+ "/manutencoes.html")
+});
 app.get("/manutencoes", (req, res) => {
     connection.query("SELECT * FROM manutencoes", (err, rows) => {
         if (err) return res.send("Erro: " + err);
