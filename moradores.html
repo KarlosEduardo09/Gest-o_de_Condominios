@@ -4,81 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestão de Moradores</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background: darkgreen;
-            color: white;
-            text-align: center;
-            padding: 15px;
-        }
-        main {
-            max-width: 900px;
-            margin: 20px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-        }
-        input, button {
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            width: 100%;
-        }
-        button {
-            background: green;
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        button:hover {
-            background: darkgreen;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background: #32f75c;
-            color: white;
-        }
-        .btn-editar {
-            background: orange;
-            color: white;
-            border: none;
-            padding: 6px;
-            cursor: pointer;
-        }
-        .btn-excluir {
-            background: red;
-            color: white;
-            border: none;
-            padding: 6px;
-            cursor: pointer;
-        }
-        .btn-voltar {
-            background: gray;
-            color: white;
-            margin-bottom: 15px;
-            padding: 8px 15px;
-            border-radius: 5px;
-        }
-        .btn-voltar:hover {
-            background: darkgray;
-        }
-    </style>
+    <link rel="stylesheet" href="./public/moradores.css">
+    <script src="node.js"></script>
+   
 </head>
 <body>
 
@@ -95,6 +23,7 @@
         <input type="text" id="apartamento" placeholder="Apartamento" required>
         <input type="text" id="telefone" placeholder="Telefone" required>
         <input type="email" id="email" placeholder="E-mail" required>
+        <input type="cpf" id="cpf" placeholder="cpf" required>
         <button type="submit">💾 Salvar</button>
     </form>
 
@@ -105,6 +34,7 @@
                 <th>Apartamento</th>
                 <th>Telefone</th>
                 <th>E-mail</th>
+                <th>Cpf</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -125,6 +55,7 @@
                     <td>${morador.apartamento}</td>
                     <td>${morador.telefone}</td>
                     <td>${morador.email}</td>
+                    <td>${morador.cpf}</td>
                     <td>
                         <button class="btn-editar" onclick="editarMorador(${index})">✏ Editar</button>
                         <button class="btn-excluir" onclick="excluirMorador(${index})">🗑 Excluir</button>
@@ -140,17 +71,18 @@
         const apartamento = document.getElementById("apartamento").value.trim();
         const telefone = document.getElementById("telefone").value.trim();
         const email = document.getElementById("email").value.trim();
+        const cpf = document.getElementById("cpf").value.trim();
         const editIndex = document.getElementById("editIndex").value;
 
-        if (!nome || !apartamento || !telefone || !email) {
+        if (!nome || !apartamento || !telefone || !email || !cpf) {
             alert("Preencha todos os campos!");
             return;
         }
 
         if (editIndex === "") {
-            moradores.push({ nome, apartamento, telefone, email });
+            moradores.push({ nome, apartamento, telefone, email, cpf });
         } else {
-            moradores[editIndex] = { nome, apartamento, telefone, email };
+            moradores[editIndex] = { nome, apartamento, telefone, email, cpf };
             document.getElementById("editIndex").value = "";
         }
 
@@ -165,6 +97,7 @@
         document.getElementById("apartamento").value = morador.apartamento;
         document.getElementById("telefone").value = morador.telefone;
         document.getElementById("email").value = morador.email;
+        document.getElementById("cpf").value = morador.cpf;
         document.getElementById("editIndex").value = index;
     }
 

@@ -6,7 +6,7 @@ const path = require("path");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use(express.static('public'));
+app.use('/public', express.static('public'));
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -30,8 +30,13 @@ app.get("/", function (req, res) {
 app.get('/blocos', (req, res) => {
     connection.query('SELECT * FROM blocos', (err, rows) => {
         if (err) return res.status(500).send('Erro ao buscar blocos.');
-        let html = `<h1>Blocos</h1>
-        <form method="POST" action="/blocos/cadastrar">
+        let html = `
+        <html>
+            <head>
+              <link rel="stylesheet" href="./public_blocos.css">
+            </head>
+        <h1>Blocos</h1>
+        <form method="POST" action="/blocos_cadastrar">
             <input type="text" name="nome" placeholder="Nome do bloco" required>
             <input type="text" name="descricao" placeholder="Descrição do bloco">
             <button type="submit">Cadastrar</button>
@@ -48,18 +53,20 @@ app.get('/blocos', (req, res) => {
                 </td>
             </tr>`).join('')}
         </table>
-        <a href="/">Voltar</a>`;
+        <a href="/">Voltar</a>`
+
+        ;
         res.send(html);
     });
 });
 
-app.post('/blocos/cadastrar', (req, res) => {
+app.post('/blocos_cadastrar', (req, res) => {
     const { nome, descricao } = req.body;
     connection.query(
         'INSERT INTO blocos (nome, descricao) VALUES (?, ?)',
         [nome, descricao],
         err => {
-            if (err) return res.status(500).send('Erro ao cadastrar bloco.');
+            if (err) return res.status(500).send('Erro ao cadastrar bloco.', err);
             res.redirect('/blocos');
         }
     );
@@ -99,6 +106,10 @@ app.get("/apartamentos", (req, res) => {
     connection.query("SELECT * FROM apartamentos", (err, rows) => {
         if (err) return res.send("Erro: " + err);
         res.send(`
+            <html>
+            <head>
+              <link rel="stylesheet" href="./public/apartamento.css">
+            </head>
             <h1>Apartamentos</h1>
             <form method="POST" action="/apartamentos/cadastrar">
                 <input type="text" name="numero" placeholder="Número" required>
@@ -118,6 +129,7 @@ app.get("/apartamentos", (req, res) => {
                 </tr>`).join("")}
             </table>
             <a href="/">Voltar</a>
+            </html>
         `);
     });
 });
@@ -134,11 +146,16 @@ app.get("/moradores", (req, res) => {
     connection.query("SELECT * FROM moradores", (err, rows) => {
         if (err) return res.send("Erro: " + err);
         res.send(`
+            <html>
+            <head>
+              <link rel="stylesheet" href="./public/moradores.css">
+            </head>
             <h1>Moradores</h1>
             <form method="POST" action="/moradores/cadastrar">
                 <input type="text" name="nome" placeholder="Nome" required>
                 <input type="text" name="telefone" placeholder="Telefone">
                 <input type="email" name="email" placeholder="Email">
+                <input type="text" name="cpf" placeholder="CPF" required>
                 <input type="number" name="apartamento_id" placeholder="Apartamento ID">
                 <button type="submit">Cadastrar</button>
             </form>
@@ -153,14 +170,15 @@ app.get("/moradores", (req, res) => {
                 </tr>`).join("")}
             </table>
             <a href="/">Voltar</a>
+            </html>
         `);
     });
 });
 
 app.post("/moradores/cadastrar", (req, res) => {
-    const { nome, telefone, email, apartamento_id } = req.body;
-    connection.query("INSERT INTO moradores (nome, telefone, email, apartamento_id) VALUES (?, ?, ?, ?)",
-        [nome, telefone, email, apartamento_id], err => {
+    const { nome, telefone, email, apartamento_id, cpf } = req.body;
+    connection.query("INSERT INTO moradores (nome, telefone, email, apartamento_id, cpf) VALUES (?, ?, ?, ?, ?)",
+        [nome, telefone, email, apartamento_id, cpf], err => {
             if (err) return res.send("Erro: " + err);
             res.redirect("/moradores");
         });
@@ -172,10 +190,14 @@ app.get("/pagamentos", (req, res) => {
     connection.query("SELECT * FROM pagamentos", (err, rows) => {
         if (err) return res.send("Erro: " + err);
         res.send(`
+            <html>
+            <head>
+              <link rel="stylesheet" href="./public/pagamentos.css">
+            </head>
             <h1>Pagamentos</h1>
             <form method="POST" action="/pagamentos/cadastrar">
-                <input type="number" name="morador_id" placeholder="ID Morador" required>
-                <input type="date" name="data" required>
+                <input type="text" name="nome_morador" placeholder="nome Morador" required>
+                <input type="date" name="data_pagamento" required>
                 <input type="number" step="0.01" name="valor" placeholder="Valor" required>
                 <button type="submit">Cadastrar</button>
             </form>
@@ -183,19 +205,20 @@ app.get("/pagamentos", (req, res) => {
                 <tr><th>ID</th><th>Morador</th><th>Data</th><th>Valor</th></tr>
                 ${rows.map(p => `<tr>
                     <td>${p.id}</td>
-                    <td>${p.morador_id}</td>
-                    <td>${p.data}</td>
+                    <td>${p.nome_morador}</td>
+                    <td>${p.data_pagamentos}</td>
                     <td>${p.valor}</td>
                 </tr>`).join("")}
             </table>
             <a href="/">Voltar</a>
+            </html>
         `);
     });
 });
 
 app.post("/pagamentos/cadastrar", (req, res) => {
-    const { morador_id, data, valor } = req.body;
-    connection.query("INSERT INTO pagamentos (morador_id, data, valor) VALUES (?, ?, ?)", [morador_id, data, valor], err => {
+    const { nome_morador, data_pagamento, valor } = req.body;
+    connection.query("INSERT INTO pagamentos ( nome_morador, data_pagamento, valor) VALUES (?, ?, ?)", [nome_morador, data_pagamento, valor], err => {
         if (err) return res.send("Erro: " + err);
         res.redirect("/pagamentos");
     });
@@ -207,25 +230,30 @@ app.get("/tipos_manutencao", (req, res) => {
     connection.query("SELECT * FROM tipos_manutencao", (err, rows) => {
         if (err) return res.send("Erro: " + err);
         res.send(`
+            <html>
+            <head>
+              <link rel="stylesheet" href="./public/tipos_manutencao.css">
+            </head>
             <h1>Tipos de Manutenção</h1>
             <form method="POST" action="/tipos_manutencao/cadastrar">
-                <input type="text" name="descricao" placeholder="Descrição" required>
+                <input type="text" name="Descricao" placeholder="Descrição" required>
                 <button type="submit">Cadastrar</button>
             </form>
             <table border="1">
                 <tr><th>ID</th><th>Descrição</th></tr>
                 ${rows.map(t => `<tr>
                     <td>${t.id}</td>
-                    <td>${t.descricao}</td>
+                    <td>${t.Descricao}</td>
                 </tr>`).join("")}
             </table>
             <a href="/">Voltar</a>
+            </html>
         `);
     });
 });
 
 app.post("/tipos_manutencao/cadastrar", (req, res) => {
-    connection.query("INSERT INTO tipos_manutencao (descricao) VALUES (?)", [req.body.descricao], err => {
+    connection.query("INSERT INTO tipos_manutencao (Descricao) VALUES (?)", [req.body.Descricao], err => {
         if (err) return res.send("Erro: " + err);
         res.redirect("/tipos_manutencao");
     });
@@ -236,10 +264,14 @@ app.get("/manutencoes", (req, res) => {
     connection.query("SELECT * FROM manutencoes", (err, rows) => {
         if (err) return res.send("Erro: " + err);
         res.send(`
+            <html>
+            <head>
+              <link rel="stylesheet" href="./public/manutencoes.css">
+            </head>
             <h1>Manutenções Realizadas</h1>
             <form method="POST" action="/manutencoes/cadastrar">
                 <input type="number" name="tipo_id" placeholder="Tipo ID" required>
-                <input type="date" name="data" required>
+                <input type="date" name="bloco_id" required>
                 <textarea name="descricao" placeholder="Descrição"></textarea>
                 <button type="submit">Cadastrar</button>
             </form>
@@ -253,13 +285,14 @@ app.get("/manutencoes", (req, res) => {
                 </tr>`).join("")}
             </table>
             <a href="/">Voltar</a>
+            </html>
         `);
     });
 });
 
 app.post("/manutencoes/cadastrar", (req, res) => {
     const { tipo_id, data, descricao } = req.body;
-    connection.query("INSERT INTO manutencoes (tipo_id, data, descricao) VALUES (?, ?, ?)", [tipo_id, data, descricao], err => {
+    connection.query("INSERT INTO manutencoes (tipo_id, bloco_id, descricao) VALUES (?, ?, ?)", [tipo_id, bloco_id, descricao], err => {
         if (err) return res.send("Erro: " + err);
         res.redirect("/manutencoes");
     });

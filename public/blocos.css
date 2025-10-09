@@ -1,0 +1,75 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+header {
+    background: darkgreen;
+    color: white;
+    text-align: center;
+    padding: 15px;
+}
+main {
+    max-width: 700px;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+input, button {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+button {
+    background: green;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    border: none;
+    transition: 0.2s;
+}
+button:hover {
+    opacity: 0.9;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+th {
+    background: darkgreen;
+    color: white;
+}
+td {
+    vertical-align: middle;
+}
+.acoes {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+}
+.btn-editar {
+    background: orange;
+}
+.btn-excluir {
+    background: red;
+}
+.btn-voltar {
+    background: gray;
+    color: white;
+    margin-bottom: 15px;
+    padding: 8px 15px;
+    border-radius: 5px;
+}
+.btn-voltar:hover {
+    background: darkgray;
+}

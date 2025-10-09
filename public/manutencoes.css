@@ -1,0 +1,19 @@
+body { font-family: Arial, sans-serif; margin: 20px; }
+        form { margin-bottom: 20px; }
+        input, select, button { padding: 5px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid darkgreen; padding: 8px; text-align: center; }
+        th { background: darkgreen; }
+        .btn { padding: 5px 10px; cursor: pointer; }
+        .edit { background: orange; color: darkgreen; border: none; }
+        .delete { background: red; color: darkgreen; border: none; }
+        .btn-voltar {
+            background: gray;
+            color: white;
+            margin-bottom: 15px;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+        .btn-voltar:hover {
+            background: darkgray;
+        }
