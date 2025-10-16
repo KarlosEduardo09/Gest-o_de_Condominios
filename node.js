@@ -6,8 +6,12 @@ const path = require("path");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+<<<<<<< HEAD
+app.use('/public', express.static('public'));
+=======
 app.use(express.static('public'));
-// Conexão com MySQL
+>>>>>>> 09204ecf45579c6ac0ce350f989724528965314f
+
 const connection = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -234,33 +238,111 @@ app.post("/pagamentos/cadastrar", (req, res) => {
     });
 });
 
+app.get("/tipomanutencao",(req,res)=>{
+    res.sendFile(__dirname+ "/tiposmanutencao.html")
+});
 
-
-app.get("/tipos_manutencao", (req, res) => {
-    connection.query("SELECT * FROM tipos_manutencao", (err, rows) => {
-        if (err) return res.send("Erro: " + err);
-        res.send(`
-            <h1>Tipos de Manutenção</h1>
-            <form method="POST" action="/tipos_manutencao/cadastrar">
-                <input type="text" name="descricao" placeholder="Descrição" required>
-                <button type="submit">Cadastrar</button>
-            </form>
-            <table border="1">
-                <tr><th>ID</th><th>Descrição</th></tr>
-                ${rows.map(t => `<tr>
-                    <td>${t.id}</td>
-                    <td>${t.descricao}</td>
-                </tr>`).join("")}
-            </table>
-            <a href="/">Voltar</a>
-        `);
+app.post('/tiposmanutencao', (req, res) => {
+    const {id_tipo, descricao } = req.body;
+    const insert = 'INSERT INTO tipos_manutencao (descricao) VALUES (?)';
+    connection.query(insert, [descricao], (err) => {
+        if (err) {
+            console.error("Erro ao cadastrar tipo de manutenção: ", err);
+            res.status(500).send('Erro ao cadastrar tipo de manutenção');
+            return;
+        } else {
+            res.redirect('/listar-tiposmanutencao');
+        }
     });
 });
 
-app.post("/tipos_manutencao/cadastrar", (req, res) => {
-    connection.query("INSERT INTO tipos_manutencao (descricao) VALUES (?)", [req.body.descricao], err => {
-        if (err) return res.send("Erro: " + err);
-        res.redirect("/tipos_manutencao");
+
+app.get('/listar-tiposmanutencao', (req, res) => {
+    const select = 'SELECT * FROM tipos_manutencao';
+    connection.query(select, (err, rows) => {
+        if (err) {
+            console.error("Erro listar tipos de manutenções: ", err);
+            res.status(500).send('Erro ao listar tipos de manutenções');
+            return;
+        } else {
+            res.send(`
+                <!DOCTYPE html>
+                <html lang="pt-br">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Listagem de Tipos de Manutenção</title>
+                </head>
+                <body>
+                    <h1>Dados da Manutenção</h1>
+                    <table>
+                        <tr>
+                            <th>ID Tipo</th>
+                            <th>Descrição</th>
+                            <th>Ações</th>
+                        </tr>
+                        ${rows.map(row => `
+                            <tr>
+                                <td>${row.id_tipo}</td>
+                                <td>${row.descricao}</td>
+                                <td class="acoes">
+                                    <a href="/deletar-tipos-manutencoes/${row.id_tipo}">Deletar</a>
+                                    <a href="/atualizar-tipos-manutencoes/${row.id_tipo}">Atualizar</a>
+                                </td>
+                            </tr>`).join('')}
+                    </table>
+                    <a href="/" class="voltar">Voltar</a>
+                </body>
+                </html>
+            `);
+        }
+    });
+});
+
+app.get('/deletar-tiposmanutencoes/:id_tipo', (req, res) => {
+    const id_tipo = req.params.id_tipo;
+    const deletar = 'DELETE FROM tipos_manutencao WHERE id_tipo = ?';
+    connection.query(deletar, [id_tipo], (err) => {
+        if (err) {
+            console.error("Erro ao deletar tipo de manutenção: ", err);
+            res.status(500).send('Erro ao deletar tipo de manutenção');
+            return;
+        } else {
+            res.redirect('/listar-tiposmanutencao');
+        }
+    });
+});
+
+app.get('/atualizar-tiposmanutencoes/:id_tipo', (req, res) => {
+    const id_tipo = req.params.id_tipo;
+    const select = 'SELECT * FROM tipos_manutencao WHERE id_tipo = ?';
+    connection.query(select, [id_tipo], (err, rows) => {
+        if (!err && rows.length > 0) {
+            const tipo_manutencao = rows[0];
+            res.send(`
+                <!DOCTYPE html>
+                <html lang="pt-br">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Atualizar Manutenção</title>
+                </head>
+                <body>
+                    <h1>Atualizar Tipo de Manutenção</h1>
+                    <form action="/atualizar-manutencoes/${tipo_manutencao.id_tipo}" method="POST">
+                        <label for="id_tipo">ID Tipo:</label>
+                        <input type="text" id="id_tipo" name="id_tipo" value="${tipo_manutencao.id_tipo}" required>
+
+                        <label for="descricao">Descrição da Manutenção:</label>
+                        <input type="text" id="descricao" name="descricao" value="${tipo_manutencao.descricao}" required>
+
+                        <input type="submit" value="Atualizar">
+                    </form>
+                    <a href="/listar-tiposmanutencao" class="voltar">Voltar</a>
+                </body>
+                </html>
+            `);
+        } else {
+            res.status(404).send('Tipo de manutenção não encontrada');
+        }
     });
 });
 
