@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Manutenções</title>
+
+
+    
+     <h1>Gerenciamento de Tipos de Manutenções</h1>
+    <p>Gerencie os tipos de manutenções do condomínio aqui.</p>
+
+    <form action="/tipomanutencao" method="POST">
+        <div class="manutencao-tipos">
+            <strong>ID das Manutenções:</strong><br>
+            1 - Elétrica<br>
+            2 - Hidráulica<br>
+            3 - Pintura<br>
+            4 - Jardinagem
+        </div>
+
+        <label for="id_tipo">Tipo Manutenção (ID):</label>
+        <input type="text" id="id_tipo" name="id_tipo" required>
+
+        <label for="descricao">Descreva a Manutenção:</label>
+        <input type="text" id="descricao" name="descricao" required>
+
+        <input type="submit" value="Registrar Tipo de Manutenção">
+    </form>
+
+    <a href="http://localhost:3000/">Voltar para Home</a>
+</body>
+</html>

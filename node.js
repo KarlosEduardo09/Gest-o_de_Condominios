@@ -6,8 +6,8 @@ const path = require("path");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use('/public', express.static('public'));
-
+app.use(express.static('public'));
+// Conexão com MySQL
 const connection = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -25,6 +25,10 @@ connection.connect(err => {
 
 app.get("/", function (req, res) {
     res.sendFile(__dirname+ "/index.html")
+});
+
+app.get("/blocos",(req,res)=>{
+    res.sendFile(__dirname+ "/blocos.html")
 });
 
 app.get('/blocos', (req, res) => {
@@ -101,7 +105,9 @@ app.post('/blocos/atualizar/:id', (req, res) => {
 });
 
 
-
+app.get("/apartamento",(req,res)=>{
+    res.sendFile(__dirname+ "/apartamentos.html")
+});
 app.get("/apartamentos", (req, res) => {
     connection.query("SELECT * FROM apartamentos", (err, rows) => {
         if (err) return res.send("Erro: " + err);
@@ -141,7 +147,9 @@ app.post("/apartamentos/cadastrar", (req, res) => {
     });
 });
 
-
+app.get("/moradores",(req,res)=>{
+    res.sendFile(__dirname+ "/moradores.html")
+});
 app.get("/moradores", (req, res) => {
     connection.query("SELECT * FROM moradores", (err, rows) => {
         if (err) return res.send("Erro: " + err);
@@ -185,7 +193,9 @@ app.post("/moradores/cadastrar", (req, res) => {
 });
 
 
-
+app.get("/pagamento",(req,res)=>{
+    res.sendFile(__dirname+ "/pagamentos.html")
+});
 app.get("/pagamentos", (req, res) => {
     connection.query("SELECT * FROM pagamentos", (err, rows) => {
         if (err) return res.send("Erro: " + err);
@@ -230,36 +240,46 @@ app.get("/tipos_manutencao", (req, res) => {
     connection.query("SELECT * FROM tipos_manutencao", (err, rows) => {
         if (err) return res.send("Erro: " + err);
         res.send(`
-            <html>
-            <head>
-              <link rel="stylesheet" href="./public/tipos_manutencao.css">
-            </head>
             <h1>Tipos de Manutenção</h1>
             <form method="POST" action="/tipos_manutencao/cadastrar">
-                <input type="text" name="Descricao" placeholder="Descrição" required>
+                <input type="text" name="descricao" placeholder="Descrição" required>
                 <button type="submit">Cadastrar</button>
             </form>
             <table border="1">
                 <tr><th>ID</th><th>Descrição</th></tr>
                 ${rows.map(t => `<tr>
                     <td>${t.id}</td>
-                    <td>${t.Descricao}</td>
+                    <td>${t.descricao}</td>
                 </tr>`).join("")}
             </table>
             <a href="/">Voltar</a>
-            </html>
         `);
     });
 });
 
 app.post("/tipos_manutencao/cadastrar", (req, res) => {
-    connection.query("INSERT INTO tipos_manutencao (Descricao) VALUES (?)", [req.body.Descricao], err => {
+    connection.query("INSERT INTO tipos_manutencao (descricao) VALUES (?)", [req.body.descricao], err => {
         if (err) return res.send("Erro: " + err);
         res.redirect("/tipos_manutencao");
     });
 });
 
+app.post('/atualizar-tipos-manutencoes/:id_tipo', (req, res) => {
+    const id_tipo = req.params.id_tipo;
+    const { descricao } = req.body;
+    const update = 'UPDATE tipos_manutencao SET descricao = ? WHERE id_tipo = ?';
+    connection.query(update, [descricao, id_tipo], (err) => {
+        if (err) {
+            res.status(500).send('Erro ao atualizar tipo de manutenção');
+        } else {
+            res.redirect('/listar-tiposmanutencao');
+        }
+    });
+});
 
+app.get("/manutencoes",(req,res)=>{
+    res.sendFile(__dirname+ "/manutencoes.html")
+});
 app.get("/manutencoes", (req, res) => {
     connection.query("SELECT * FROM manutencoes", (err, rows) => {
         if (err) return res.send("Erro: " + err);
