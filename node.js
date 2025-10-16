@@ -6,11 +6,7 @@ const path = require("path");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-<<<<<<< HEAD
-app.use('/public', express.static('public'));
-=======
 app.use(express.static('public'));
->>>>>>> 09204ecf45579c6ac0ce350f989724528965314f
 
 const connection = mysql.createConnection({
     host: "localhost",
